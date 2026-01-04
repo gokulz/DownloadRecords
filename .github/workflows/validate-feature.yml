@@ -36,16 +36,16 @@ jobs:
           echo "${{ secrets.SFDX_AUTH_URL }}" > authFile.txt
           
           # 2. Login using the sfdx-url command. 
-          # The -a flag sets the alias 'personalProject'
+          # The -a flag sets the alias 'projectLog'
           # We use authFile.txt here, which contains ONLY the raw force://... string
-          sf org login sfdx-url --sfdx-url-file authFile.txt -a personalProject
+          sf org login sfdx-url --sfdx-url-file authFile.txt -a projectLog
 
       - name: Deploy Source to Salesforce
         # Ensure your project structure is correct (e.g., using default packageDir 'force-app')
         run: |
           # The -o flag is not for setting an alias; it specifies the target username/alias.
           # Since we set the alias 'personalProject' in the previous step, we use it here.
-          sf project deploy start -o personalProject
+          sf project deploy start -o projectLog
           
       - name: Clean up temporary files (Optional but good practice)
         run: rm -f authFile.txt
