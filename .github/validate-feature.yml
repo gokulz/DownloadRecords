@@ -1,0 +1,51 @@
+name: Salesforce Deployment
+
+on:
+  push:
+    branches:
+      - main
+    # Removing 'paths: - 'force-app/**'' for initial testing. 
+    # If the workflow runs now, your issue was the path filter.
+    # If you must keep it, ensure your pushed changes are inside force-app/
+    # paths: 
+    #   - 'force-app/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Install Salesforce CLI
+        # Switched to manual npm install to allow for installing sfdx-git-delta plugin
+        run: npm install @salesforce/cli --global
+
+      - name: Install sfdx-git-delta Plugin
+        run: | 
+          # The 'echo Y |' part automatically accepts the plugin installation prompt
+          echo Y | sf plugins install sfdx-git-delta
+          # Optional: Verify installed plugins
+          sf plugins 
+
+      - name: Authenticate Salesforce Org (using SFDX Auth URL)
+        shell: bash
+        run: |
+          # 1. Create a file with the raw sfdx auth URL string from the secret.
+          echo "${{ secrets.SFDX_AUTH_URL }}" > authFile.txt
+          
+          # 2. Login using the sfdx-url command. 
+          # The -a flag sets the alias 'personalProject'
+          # We use authFile.txt here, which contains ONLY the raw force://... string
+          sf org login sfdx-url --sfdx-url-file authFile.txt -a personalProject
+
+      - name: Deploy Source to Salesforce
+        # Ensure your project structure is correct (e.g., using default packageDir 'force-app')
+        run: |
+          # The -o flag is not for setting an alias; it specifies the target username/alias.
+          # Since we set the alias 'personalProject' in the previous step, we use it here.
+          sf project deploy start -o personalProject
+          
+      - name: Clean up temporary files (Optional but good practice)
+        run: rm -f authFile.txt
