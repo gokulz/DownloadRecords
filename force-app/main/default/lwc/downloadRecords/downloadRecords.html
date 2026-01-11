@@ -1,0 +1,35 @@
+<template>
+    <lightning-card title="Download Records">
+
+        <template if:true={isObjectList}>
+            <div class="slds-m-around_medium">
+                <div class="slds-grid slds-grid_vertical-align-center">
+                    <div class="slds-col slds-m-right_small">
+                        <span class="slds-text-title_bold" style="margin-left: 150px;">Search an Object</span>
+                    </div>
+                    <div class="slds-col combo-box" >
+                        <lightning-combobox
+                            name="objectName"
+                            placeholder="Select an Object"
+                            options={objList}
+                            value={selectedObj}
+                            onchange={handleObjectChange}>
+                        </lightning-combobox>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <template if:true={showSearch}>
+            <div class="slds-align_absolute-center slds-m-top_small slds-m-bottom_medium">
+                <lightning-button
+                    variant="brand"
+                    label="Search Records"
+                    title="Search Records"
+                    onclick={handleClick}>
+                </lightning-button>
+            </div>
+        </template>
+
+    </lightning-card>
+</template>

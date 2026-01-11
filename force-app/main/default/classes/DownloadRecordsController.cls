@@ -5,6 +5,7 @@ public with sharing class DownloadRecordsController {
      * @description Retrieves all sObjects the user can query, access, update, and search
      * @return List of sObject API names
      */
+    @AuraEnabled(cacheable=true)
     public static List<String> getAllObjects(){
         
         List<String> objectNames = new List<String>();
