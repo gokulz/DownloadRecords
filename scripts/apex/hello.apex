@@ -9,4 +9,6 @@
 // System.debug('Hello World!');
 // System.debug('My name is ' + tempvar);
 
-System.debug(DownloadRecordsController.getAllObjects());
+// System.debug(DownloadRecordsController.getAllObjects());
+
+System.debug(DownloadRecordsController.retrieveRecords('Case'));

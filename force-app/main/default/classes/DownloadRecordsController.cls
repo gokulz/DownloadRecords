@@ -29,4 +29,48 @@ public with sharing class DownloadRecordsController {
 
         return objectNames;
      }
+
+     /***
+      * 
+      * @author - Gokul
+      *
+      * @description - Retreive all the records based on the selected objectName
+      * @param - String objectName - passing the selected objectName
+      * @return list of records
+      */
+
+      @AuraEnabled(cacheable=true)
+      public static List<SObject> retrieveRecords(String objectName){
+          
+          if(String.isBlank(objectName)){
+               throw new AuraHandledException('Object Name Cannot be Blank');
+          }
+
+          //get the object type 
+          SObjectType objType = Schema.getGlobalDescribe().get(objectName);
+
+           //check the object is queryable are not go deep inside the fields
+           DescribeSObjectResult objDescribe = objType.getDescribe();
+
+           if(!objDescribe.isAccessible() || !objDescribe.isQueryable()){
+              throw new AuraHandledException( objectName + 'you do not have a permission to query and access the object');
+           }
+
+           String nameField = 'Name';
+
+           Map<String,SObjectField> fieldMaps = objDescribe.fields.getMap();
+
+           for(SObjectField fields : fieldMaps.values()){
+               DescribeFieldResult fieldResult = fields.getDescribe();
+
+               if(fieldResult.isNameField()){
+                   nameField = fieldResult.getName();
+                   break;
+               }
+           }
+
+          String query = 'Select Id, ' + nameField + ', CreatedDate, LastModifiedDate From ' + String.escapeSingleQuotes(objectName) + ' Limit 50000';
+
+          return Database.query(query);
+      }
 }
