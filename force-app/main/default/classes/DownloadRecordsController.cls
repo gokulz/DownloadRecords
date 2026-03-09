@@ -1,7 +1,6 @@
 public with sharing class DownloadRecordsController {
    
-    
-     /**
+    /**
      * @description Retrieves all sObjects the user can query, access, update, and search
      * @return List of sObject API names
      */
@@ -36,11 +35,11 @@ public with sharing class DownloadRecordsController {
       *
       * @description - Retreive all the records based on the selected objectName
       * @param - String objectName - passing the selected objectName
-      * @return list of records
+      * @return RecordsWrapper containing nameField and list of records
       */
 
-      @AuraEnabled(cacheable=true)
-      public static List<SObject> retrieveRecords(String objectName){
+      @AuraEnabled
+      public static RecordsWrapper retrieveRecords(String objectName){
           
           if(String.isBlank(objectName)){
                throw new AuraHandledException('Object Name Cannot be Blank');
@@ -71,6 +70,18 @@ public with sharing class DownloadRecordsController {
 
           String query = 'Select Id, ' + nameField + ', CreatedDate, LastModifiedDate From ' + String.escapeSingleQuotes(objectName) + ' Limit 50000';
 
-          return Database.query(query);
+          RecordsWrapper wrapper = new RecordsWrapper();
+          wrapper.nameField = nameField;
+          wrapper.records = Database.query(query);
+
+          return wrapper;
+      }
+
+      /**
+       * @description Wrapper class to return both the nameField and records to LWC
+       */
+      public class RecordsWrapper {
+          @AuraEnabled public String nameField { get; set; }
+          @AuraEnabled public List<SObject> records { get; set; }
       }
 }
