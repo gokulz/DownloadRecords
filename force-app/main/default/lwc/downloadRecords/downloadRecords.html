@@ -11,13 +11,14 @@
                         <lightning-combobox
                             name="objectName"
                             placeholder="Select an Object"
-                            options={objList}
+                            options={filteredObjectList}
                             value={selectedObj}
                             onchange={handleObjectChange}>
                         </lightning-combobox>
                     </div>
                 </div>
             </div>
+
         </template>
 
         <template if:true={showSearch}>
@@ -26,9 +27,17 @@
                     variant="brand"
                     label="Search Records"
                     title="Search Records"
-                    onclick={handleClick}>
+                    onclick={searchRecords}>
                 </lightning-button>
             </div>
+        </template>
+
+        <template if:true={showTable}>
+            <lightning-datatable
+              key-field="Id"
+              data={records}
+              columns={columns}>
+            </lightning-datatable>
         </template>
 
     </lightning-card>
